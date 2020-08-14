@@ -16,11 +16,11 @@
   const auth = firebase.auth();
 
   function signUp(){
-      var name = document.getElementById("name");
-      var email = document.getElementById("email");
-      var password = document.getElementById("password");
+      var name = document.getElementById("name").value;
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
 
-      const promise = auth.createUserWithEmailAndPassword(email.nodeValue, password.nodeValue);
+      const promise = auth.createUserWithEmailAndPassword(email, password);
       promise.catch(e => alert(e.message));
 
       alert("Signed Up");
