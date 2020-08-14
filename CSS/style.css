@@ -31,7 +31,7 @@ span{
 }
 a{
     color: #333;
-    font-size: 40px;
+    font-size: 10px;
     text-decoration: none;
     margin: 15px 0;
 }
@@ -143,8 +143,8 @@ input{
 }
 .overlay{
     background: #0000FF;
-    background: -webkit-linear-gradient(to right, #ff4828, #0000FF);
-    background: linear-gradient(to right, #ff4828, #0000FF);
+    background: -webkit-linear-gradient(to right, #0000FF, #0000FF);
+    background: linear-gradient(to right, #0000FF, #0000FF);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 0 0;
