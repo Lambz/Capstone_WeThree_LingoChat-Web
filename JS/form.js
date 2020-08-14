@@ -27,15 +27,12 @@
   }
 
   function signIn(){
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
+
+    var email = document.getElementById("login_email").value;
+    var password = document.getElementById("login_password").value;
 
     const promise = auth.signInWithEmailAndPassword(email, password);
       promise.catch(e => alert(e.message));
 
       alert("Signed In" );
-
-
-
-
   }
