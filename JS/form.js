@@ -27,3 +27,22 @@
 
       alert("Signed In" );
   }
+
+  firebase.auth().onAuthStateChanged(user =>{
+    if (user){this.userId=user.uid}
+
+  });
+  
+
+  
+  // if (user != null) {
+  //   // name = user.displayName;
+  //   // email = user.email;
+  //   // photoUrl = user.photoURL;
+  //   // emailVerified = user.emailVerified;
+  //   uid = user.uid;  
+  //   //console.log(uid);
+  // }
+  
+  
+
