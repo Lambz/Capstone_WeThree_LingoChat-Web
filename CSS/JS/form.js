@@ -15,15 +15,27 @@
 
   const auth = firebase.auth();
 
-  
+  function signUp(){
+      var name = document.getElementById("name");
+      var email = document.getElementById("email");
+      var password = document.getElementById("password");
 
-  function signIn(){
-
-    var email = document.getElementById("login_email").value;
-    var password = document.getElementById("login_password").value;
-
-    const promise = auth.signInWithEmailAndPassword(email, password);
+      const promise = auth.createUserWithEmailAndPassword(email.nodeValue, password.nodeValue);
       promise.catch(e => alert(e.message));
 
-      alert("Signed In" );
+      alert("Signed Up");
   }
+
+  function signIn(){
+    var email = document.getElementById("email");
+    var password = document.getElementById("password");
+
+    alert("Signed In" + email);
+  }
+
+  function signOut(){
+    auth.signOut();
+    alert("signed out");
+  }
+
+  

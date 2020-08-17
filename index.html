@@ -20,25 +20,14 @@
 </head>
 <body>
     <div class="container" id="container">
-        <!-- <div class="form-container sign-up-container">
-        <form action="#">
-                <h1>Create Account</h1>
-                <div class="social-container">
-                    <a href="#" class="social"><i class="fa fa-facebook"></i></a>
-                    <a href="#" class="social"><i class="fa fa-google"></i></a>
-                </div>
-                <span>or use your email for registration</span>
-                <input type="text" id="name" name="name" placeholder="Name">
-                <input type="email" id="email" name="email" placeholder="Email">
-                <input type="password" id="password" name="password" placeholder="Password">
-                <button onclick="signUp()">SignUp</button>
-            </form>
-        </div> -->
+       
         <div class="form-container sign-in-container">
             <!-- <form action="#"> -->
-                <h1>Sign In</h1>
+                <h1>Welcome Back!</h1>
+                <p>To keep connected with us please login with your email ID</p>
+            
                 <div class="g-signin2" data-onsuccess="onSignIn">
-                <a href="#" class="social"><i class="fa fa-google"></i></a>
+               
                 </div>
                
                 <span>or use your account</span>
@@ -47,25 +36,25 @@
 
                 <a href="#">forgot your password?</a>
 
-                <button onclick="signIn()">SignIn</button> 
+                <button onclick="signIn()"><a href="chat_page.html">SignIn</a></button> 
             <!-- </form> -->
         </div>
-        <div class="overlay-container">
+        <!-- <div class="overlay-container">
             <div class="overlay">
                 <div id="signInOverlay" class="overlay-panel overlay-left">
                     <h1>Welcome Back!</h1>
                     <p>To keep connected with us please login with your email ID</p>
                     <button class="ghost" id="signIn">Sign In</button>
-                </div>
+                </div> -->
                 <!-- <div id="signUpOverlay" class="overlay-panel overlay-right">
                     <h1>Hello Friend!</h1>
                     <p>Enter your detail and start chatting with friends</p>
                     <button class="ghost" id="signUp">SignUp</button>
-                </div> -->
+                </div> 
             </div>
-        </div>
+        </div>-->
     </div>
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
     // const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
     const container = document.getElementById('container');
@@ -82,6 +71,6 @@
         document.getElementById("signInOverlay").style.display = "none";
     });
 
-    </script>
+    </script> -->
 </body>
 </html>
