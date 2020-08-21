@@ -1,0 +1,38 @@
+html, body
+{
+    margin: 0;
+    padding: 0;
+}
+
+.container
+{
+    display:flex;
+    flex-direction:row;
+    justify-content: space-around;
+    height: 100vh;
+}
+
+.chat_list
+{
+    max-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    width: 30vw;
+}
+
+
+.messages_list
+{
+    width: 70vw;
+    max-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    background: green;
+}
+
+.chat_message
+{
+    padding: 4%;
+    color: black;
+    font-size: 4em;
+}

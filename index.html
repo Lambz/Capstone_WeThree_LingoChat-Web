@@ -9,10 +9,14 @@
     <meta name="google-signin-client_id" content="635956939332-u8180f7epnv07jff1vnujdjuqrol52p6.apps.googleusercontent.com">
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
-     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase.js"></script>
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <!-- <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js"></script>
      <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-analytics.js"></script>
      <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-auth.js"></script>
-     <script src="JS/form.js"> </script>
+     <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-database.js"></script> -->
+     <script src="src/form.js"> </script>
     
     <link rel="stylesheet" type= "text/css" href="CSS/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -21,23 +25,63 @@
 <body>
     <div class="container" id="container">
        
-        <div class="form-container sign-in-container">
+        <div id="box" class="box">
             <!-- <form action="#"> -->
+                <br/>
+                <br/>
+                <img src="res/logo.png" class="logo_img"/>
                 <h1>Welcome Back!</h1>
-                <p>To keep connected with us please login with your email ID</p>
             
                 <div class="g-signin2" data-onsuccess="onSignIn">
-               
                 </div>
-               
-                <span>or use your account</span>
-                <input type="email" id="login_email" name="login_email" placeholder="Email">
-                <input type="password" id="login_password" name="login_password" placeholder="Password">
+                <br/>
+                <input type="email" id="login_email" class="field" placeholder="Email" value="test@gmail.com"/>
+                <br/><br/>
+                <input type="password" id="login_password" class="field" placeholder="Password" value="test1234" />
 
-                <a href="#">forgot your password?</a>
+                <!-- <a href="#">forgot your password?</a> -->
 
-                <button onclick="signIn()"><a href="chat_page.html">SignIn</a></button> 
+                <br/><br/>
+                <button onclick="signIn()" class="sign_in_btn">Sign In</button> 
             <!-- </form> -->
+        </div>
+
+        <div id="main" class="main">
+            <div class="chat_list">
+                <div class="chat_message">
+                    Chats
+                </div>
+                <div></div>
+            </div>
+            <div class="div_right">
+                <div class="settings">
+                    <img src="res/placeholder.png" id="profile_image" class="profile_image"/>
+                    <br/>
+                    <br/>
+                    <button class="btn" onclick="newImage()">Upload New</button> 
+                    <br/>
+                    <br/>
+                    <input type="name" id="name" class="field" placeholder="Name"/>
+                    <br/><br/>
+                    <select name="lang" id="lang" class="selector">
+                        <option value="0">English</option>
+                        <option value="1">français</option>
+                        <option value="2">Deutsch</option>
+                        <option value="3">español</option>
+                        <option value="4">हिन्दी</option>
+                    </select>
+                    <br/>
+                    <br/>
+                    <button class="btn" onclick="save()">Save</button> 
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <button class="btn" onclick="signOut()">Sign Out</button> 
+                    <input id="file-input" type="file" name="name" style="display: none;" accept="image/jpeg" />
+                </div>
+                <div class="messages"></div>
+            </div>
         </div>
         <!-- <div class="overlay-container">
             <div class="overlay">
