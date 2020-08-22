@@ -13,6 +13,7 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 var database = firebase.database();
 var selected_file = null;
+var contact_messages = [];
 
 class User {
 // var email, first_name, last_name, image, lang, uid;
@@ -27,9 +28,87 @@ class User {
     }
 }
 
+class Message
+{
+    // String from, lang, text, type, link, to, fileName, id, lat, lng, locationtitle;
+    constructor(snapshot)
+    {
+        var val = snapshot.val()
+        this.from = val.from;
+        this.lang = val.lang;
+        this.text = val.text;
+        this.type = val.type;
+        this.link = val.link;
+        this.to = val.to;
+        this.file_name = val.fileName;
+        this.id = val.id;
+        this.lat = val.lat;
+        this.lng = val.lng;
+        this.location_title = val.locationtitle;
+        var user_uid;
+        if(currentUser.uid == this.from)
+        {
+            user_uid = this.to;
+        }
+        else
+        {
+            user_uid = this.from;
+        }
+        getUserInfo(this, user_uid);
+    }
+}
+
+function getUserInfo(message, user_id)
+{
+    firebase.database().ref('/Users/' + user_id).on('value',function(snapshot) {
+        user = new User(snapshot,user_id);
+        console.log(snapshot.val());
+        message.user = user;
+        deleteMessageFromContactMessage(message);
+        contact_messages.push(message);
+        printContactedPersons();
+    });
+}
+
+function deleteMessageFromContactMessage(message)
+{
+    var index = contact_messages.indexOf(message);
+    console.log(index);
+    if(index != -1)
+    {
+        contact_messages.splice(index,1);
+    }
+}
+
+function printContactedPersons()
+{
+    var contacts_div = document.getElementById("contacts");
+    contacts_div.innerHTML = "";
+    contact_messages.forEach(function (message)
+    {
+        var image = "res/placeholder.png";
+        if(message.user.image != "" )
+        {
+            image = message.user.image;
+        }
+        var text = message.text;
+        if(message.type != "text")
+        {
+            text = message.type;
+        }
+        var new_div = "<div id='"+message.user.uid+"_contact_div' class='contact_div' onclick='getChats(\""+message.user.uid+"\")'><span class='contact_image_span'><img src='"+image+"' class='contact_img' /></span><span class='contact_name_last_span'><p class='contact_name_div'>"+message.user.first_name+" "+message.user.last_name+"</p><p id='"+message.user.uid+"_last_message'>"+text+"</p></span></div>";
+        contacts_div.innerHTML += new_div;
+    });    
+}
+
 var currentUser;
 
 const auth = firebase.auth();
+
+function getChats(user_id)
+{
+    // console.log(user_id);
+}
 
 function signUp(){
     var name = document.getElementById("name");
@@ -43,6 +122,7 @@ function signUp(){
 }
 
 function signIn(){
+    // console.log("logging in");
     var email = document.getElementById("login_email").value;
     var password = document.getElementById("login_password").value;
 
@@ -69,6 +149,7 @@ function signIn(){
                 {
                     document.getElementById("profile_image").src = currentUser.image
                 }
+                getUserOldChats();
             });
         } else {
             // User is signed out.
@@ -80,9 +161,34 @@ function signIn(){
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log(errorMessage);
+        // console.log(errorMessage);
         // ...
     });
+}
+
+function getUserOldChats()
+{
+    firebase.database().ref('/Messages/' + currentUser.uid).on('value',function(snapshot){
+        // console.log(snapshot.val())
+        snapshot.forEach(function(childSnapshot) {
+            // // key will be "ada" the first time and "alan" the second time
+            // var key = childSnapshot.key;
+            // // childData will be the actual contents of the child
+            // var childData = childSnapshot.val();
+            var last_chat = getLastChat(childSnapshot);
+            // console.log(last_chat);
+        });
+      });
+}
+
+function getLastChat(snapshot)
+{
+    var last_chat;
+    snapshot.forEach(function(childSnapshot)
+    {
+        last_chat = childSnapshot;
+    });
+    return new Message(last_chat);
 }
 
 function signOut(){
@@ -93,7 +199,7 @@ function signOut(){
 
 function loadOldChats()
 {
-    console.log(firebase.auth().currentUser);
+    // console.log(firebase.auth().currentUser);
 }
 
 function newImage()
@@ -104,7 +210,7 @@ function newImage()
     //     console.log(document.getElementById('file-input').value);
     // });
     input.addEventListener('change', function() {
-        console.log("hello");
+        // console.log("hello");
         if(input.files.length > 0)
         {
             selected_file = input.files[0];

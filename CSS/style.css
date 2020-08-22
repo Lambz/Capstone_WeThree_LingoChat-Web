@@ -130,3 +130,38 @@ html, body
     border: none;
     background: white;
 }
+
+.contact_img
+{
+    width: 5vw;
+    height: 5vw;
+    border-radius: 50%;
+}
+
+.contact_div
+{
+    padding: 1vw;
+}
+
+.contact_name_last_span
+{
+    width: 22vw;
+    display: inline-block;
+    margin-left: 1vw;
+}
+
+.contact_image_span
+{
+    display: inline-block;
+}
+
+.contact_name_div
+{
+    font-size: 1.5em;
+}
+
+.contact_name_last_span > p
+{
+    margin: 0;
+    padding: 0;
+}
