@@ -203,6 +203,11 @@ function addMessage(message)
         }
         div += "</span></div>";
     }
+    if(message.type == "text")
+    {
+        console.log(message);
+        httpGetAsync(message);
+    }
     view.innerHTML += div;
     view.scrollTop = view.scrollHeight;
 }
@@ -423,4 +428,34 @@ function getLangCode(code)
         default:
             return "en";
     }
+}
+
+// function httpGet(message)
+// {
+//     var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+getLangCode(currentUser.lang)+"&q="+message.text;
+//     var xmlHttp = new XMLHttpRequest();
+//     xmlHttp.open( "GET", true, false ); // false for synchronous request
+//     xmlHttp.send( null );
+//     return xmlHttp.responseText;
+// }
+
+function httpGetAsync(message)
+{
+    var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+getLangCode(currentUser.lang)+"&q="+message.text;
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callback(xmlHttp.responseText, message);
+    }
+    xmlHttp.open("GET", url, true); // true for asynchronous 
+    xmlHttp.send(null);
+}
+
+function callback(text, message)
+{
+    var json = JSON.parse(text);
+    // console.log(message);
+    // console.log(json.data.translations[0].translatedText);
+    var span = document.getElementById(message.id+"_span")
+    span.innerHTML = json.data.translations[0].translatedText;
 }
