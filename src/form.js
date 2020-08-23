@@ -206,7 +206,7 @@ function addMessage(message)
     if(message.type == "text")
     {
         console.log(message);
-        httpGetAsync(message);
+        httpGetAsync(message, callbackForMessages);
     }
     view.innerHTML += div;
     view.scrollTop = view.scrollHeight;
@@ -299,10 +299,10 @@ function signOut(){
     document.getElementById("main").style.display = "none"
 }
 
-function loadOldChats()
-{
-    // console.log(firebase.auth().currentUser);
-}
+// function loadOldChats()
+// {
+//     // console.log(firebase.auth().currentUser);
+// }
 
 function newImage()
 {
@@ -415,16 +415,20 @@ function sendMessage()
 
 function getLangCode(code)
 {
-    switch (code)
+    switch (parseInt(code))
     {
         case 1:
-                return "fr";
+            return "fr";
+            break;
         case 2:
             return "de";
+            break;
         case 3:
             return "es";
+            break;
         case 4:
             return "hi";
+            break;
         default:
             return "en";
     }
@@ -439,9 +443,10 @@ function getLangCode(code)
 //     return xmlHttp.responseText;
 // }
 
-function httpGetAsync(message)
+function httpGetAsync(message, callback)
 {
-    var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+getLangCode(currentUser.lang)+"&q="+message.text;
+    var lang_code = getLangCode(currentUser.lang);
+    var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+lang_code+"&q="+message.text;
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() { 
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -451,7 +456,7 @@ function httpGetAsync(message)
     xmlHttp.send(null);
 }
 
-function callback(text, message)
+function callbackForMessages(text, message)
 {
     var json = JSON.parse(text);
     // console.log(message);
