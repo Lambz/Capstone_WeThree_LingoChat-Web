@@ -80,8 +80,18 @@ function getUserInfo(message, user_id)
 
 function deleteMessageFromContactMessage(message)
 {
-    var index = contact_messages.indexOf(message);
-    console.log(index);
+    // var index = contact_messages.indexOf(message);
+    var index = -1;
+    var i = 0;
+    contact_messages.forEach(function (m)
+    {
+        if(m.user.uid == message.user.uid)
+        {
+            index = i;
+        }
+        i+=1;
+    });
+    // console.log(index);
     if(index != -1)
     {
         contact_messages.splice(index,1);
@@ -153,12 +163,45 @@ function addMessage(message)
     var div;
     if(currentUser.uid == message.from)
     {
-        
-        div = "<div id='"+message.id+"_div' class='receiver_div'><span id='"+message.id+"_span' class='receiver_span'>"+message.text+"</span></div>";
+        div = "<div id='"+message.id+"_div' class='receiver_div'><span id='"+message.id+"_span' class='receiver_span'>";
+        if(message.type == "text")
+        {
+            div+=message.text;
+        }
+        else if(message.type == "image")
+        {
+            div+="<img src='"+message.link+"' class='message_image'/>"
+        }
+        else if(message.type == "pdf" || message.type == "docx")
+        {
+            div+="<img src='res/file.png' class='message_image'/>"
+        }
+        else
+        {
+            div+="<img src='res/location.png' class='message_image'/>"
+        }
+        div += "</span></div>";
     }
     else
     {
-        div = "<div id='"+message.id+"_div' class='sender_div'><span id='"+message.id+"_span' class='sender_span'>"+message.text+"</span></div>"
+        div = "<div id='"+message.id+"_div' class='sender_div'><span id='"+message.id+"_span' class='sender_span'>";
+        if(message.type == "text")
+        {
+            div+=message.text;
+        }
+        else if(message.type == "image")
+        {
+            div+="<img src='"+message.link+"' class='message_image'/>"
+        }
+        else if(message.type == "pdf" || message.type == "docx")
+        {
+            div+="<img src='res/file.png' class='message_image'/>"
+        }
+        else
+        {
+            div+="<img src='res/location.png' class='message_image'/>"
+        }
+        div += "</span></div>";
     }
     view.innerHTML += div;
     view.scrollTop = view.scrollHeight;
@@ -343,7 +386,8 @@ function settingsClicked()
 
 function sendMessage()
 {
-    var text = document.getElementById("message_text").value;
+    var view = document.getElementById("message_text");
+    var text = view.value;
     var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
     var key = receiver_ref.key;
     var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);

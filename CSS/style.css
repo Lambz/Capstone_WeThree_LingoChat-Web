@@ -265,3 +265,9 @@ html, body
 {
     text-align: right;
 }
+
+.message_image
+{
+    width: 5vw;
+    height: 5vw;
+}
