@@ -206,8 +206,8 @@ function addMessage(message)
     }
     if(message.type == "text")
     {
-        console.log(message);
-        httpGetAsync(message, callbackForMessages);
+        // console.log(message);
+        httpGetAsyncForMessages(message, callbackForMessages);
     }
     view.innerHTML += div;
     view.scrollTop = view.scrollHeight;
@@ -261,25 +261,16 @@ function signIn(){
     });
 
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-        // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
-        // console.log(errorMessage);
-        // ...
     });
 }
 
 function getUserOldChats()
 {
     firebase.database().ref('/Messages/' + currentUser.uid).on('value',function(snapshot){
-        // console.log(snapshot.val())
         snapshot.forEach(function(childSnapshot) {
-            // // key will be "ada" the first time and "alan" the second time
-            // var key = childSnapshot.key;
-            // // childData will be the actual contents of the child
-            // var childData = childSnapshot.val();
             var last_chat = getLastChat(childSnapshot);
-            // console.log(last_chat);
         });
       });
 }
@@ -299,11 +290,6 @@ function signOut(){
     document.getElementById("box").style.display = "block"
     document.getElementById("main").style.display = "none"
 }
-
-// function loadOldChats()
-// {
-//     // console.log(firebase.auth().currentUser);
-// }
 
 function newImage()
 {
@@ -436,7 +422,7 @@ function getLangCode(code)
     }
 }
 
-function httpGetAsync(message, callback)
+function httpGetAsyncForMessages(message, callback)
 {
     var lang_code = getLangCode(currentUser.lang);
     var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+lang_code+"&q="+message.text;
@@ -478,10 +464,9 @@ function callbackForLastMessage(text, id)
 function callbackForMessages(text, message)
 {
     var json = JSON.parse(text);
-    // console.log(message);
-    // console.log(json.data.translations[0].translatedText);
     var span = document.getElementById(message.id+"_span")
     span.innerHTML = json.data.translations[0].translatedText;
+    console.log(message + " "+ json.data.translations[0].translatedText);
 }
 
 function attachmentsClicked()
