@@ -14,10 +14,15 @@ firebase.analytics();
 var database = firebase.database();
 var selected_file = null;
 var contact_messages = [];
+var last_ref;
+var messages = []
+var to_user;
 
-class User {
-// var email, first_name, last_name, image, lang, uid;
-    constructor(snapshot, uid) {
+class User 
+{
+    // var email, first_name, last_name, image, lang, uid;
+    constructor(snapshot, uid) 
+    {
         this.email = snapshot.val().email;
         this.first_name = snapshot.val().first_name;
         this.last_name = snapshot.val().last_name;
@@ -31,7 +36,7 @@ class User {
 class Message
 {
     // String from, lang, text, type, link, to, fileName, id, lat, lng, locationtitle;
-    constructor(snapshot)
+    constructor(snapshot, cond = true)
     {
         var val = snapshot.val()
         this.from = val.from;
@@ -45,16 +50,19 @@ class Message
         this.lat = val.lat;
         this.lng = val.lng;
         this.location_title = val.locationtitle;
-        var user_uid;
-        if(currentUser.uid == this.from)
+        if(cond)
         {
-            user_uid = this.to;
+            var user_uid;
+            if(currentUser.uid == this.from)
+            {
+                user_uid = this.to;
+            }
+            else
+            {
+                user_uid = this.from;
+            }
+            getUserInfo(this, user_uid);
         }
-        else
-        {
-            user_uid = this.from;
-        }
-        getUserInfo(this, user_uid);
     }
 }
 
@@ -84,6 +92,7 @@ function printContactedPersons()
 {
     var contacts_div = document.getElementById("contacts");
     contacts_div.innerHTML = "";
+    var index = 0;
     contact_messages.forEach(function (message)
     {
         var image = "res/placeholder.png";
@@ -96,8 +105,9 @@ function printContactedPersons()
         {
             text = message.type;
         }
-        var new_div = "<div id='"+message.user.uid+"_contact_div' class='contact_div' onclick='getChats(\""+message.user.uid+"\")'><span class='contact_image_span'><img src='"+image+"' class='contact_img' /></span><span class='contact_name_last_span'><p class='contact_name_div'>"+message.user.first_name+" "+message.user.last_name+"</p><p id='"+message.user.uid+"_last_message'>"+text+"</p></span></div>";
+        var new_div = "<div id='"+message.user.uid+"_contact_div' class='contact_div' onclick='getChats(\""+index+"\")'><span class='contact_image_span'><img src='"+image+"' class='contact_img' /></span><span class='contact_name_last_span'><p class='contact_name_div'>"+message.user.first_name+" "+message.user.last_name+"</p><p id='"+message.user.uid+"_last_message'>"+text+"</p></span></div>";
         contacts_div.innerHTML += new_div;
+        index += 1;
     });    
 }
 
@@ -105,9 +115,53 @@ var currentUser;
 
 const auth = firebase.auth();
 
-function getChats(user_id)
+function getChats(index)
 {
-    // console.log(user_id);
+    to_user = contact_messages[index].user;
+    document.getElementById("settings").style.display = "none";
+    document.getElementById("messages").style.display = "block";
+    document.getElementById("messages_message").innerHTML = "";
+    console.log(contact_messages[index]);
+    var user = contact_messages[index].user;
+    var image = contact_messages[index].user.image;
+    if(image != "")
+    {
+        document.getElementById("message_header_image").src = image;
+    }
+    document.getElementById("message_header_name").innerHTML = contact_messages[index].user.first_name  +" "+ contact_messages[index].user.last_name;
+    try
+    {
+        last_ref.off('child_added');
+    }
+    catch (err)
+    {
+        console.log(err);
+    }
+    last_ref = firebase.database().ref('/Messages/'+currentUser.uid+'/'+user.uid);
+    last_ref.on('child_added', function(data)
+    {
+        var message = new Message(data, false);
+        addMessage(message);
+        // // messages.push(messages);
+        // console.log(message);
+    });
+}
+
+function addMessage(message)
+{
+    var view = document.getElementById("messages_message");
+    var div;
+    if(currentUser.uid == message.from)
+    {
+        
+        div = "<div id='"+message.id+"_div' class='receiver_div'><span id='"+message.id+"_span' class='receiver_span'>"+message.text+"</span></div>";
+    }
+    else
+    {
+        div = "<div id='"+message.id+"_div' class='sender_div'><span id='"+message.id+"_span' class='sender_span'>"+message.text+"</span></div>"
+    }
+    view.innerHTML += div;
+    view.scrollTop = view.scrollHeight;
 }
 
 function signUp(){
@@ -281,3 +335,48 @@ function save()
     
 }
 
+function settingsClicked()
+{
+    document.getElementById("settings").style.display = "block";
+    document.getElementById("messages").style.display = "none";
+}
+
+function sendMessage()
+{
+    var text = document.getElementById("message_text").value;
+    var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
+    var key = receiver_ref.key;
+    var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);
+    if(text != "")
+    {
+        var data = {
+            "from": currentUser.uid,
+            "id": key,
+            "lang": getLangCode(currentUser.lang),
+            "link":"",
+            "text":text,
+            "to":to_user.uid,
+            "type":"text"
+        }
+        receiver_ref.set(data);
+        sender_ref.set(data);
+        view.value = "";
+    }
+}
+
+function getLangCode(code)
+{
+    switch (code)
+    {
+        case 1:
+                return "fr";
+        case 2:
+            return "de";
+        case 3:
+            return "es";
+        case 4:
+            return "hi";
+        default:
+            return "en";
+    }
+}

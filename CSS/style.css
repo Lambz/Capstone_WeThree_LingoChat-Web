@@ -63,7 +63,7 @@ html, body
     flex-direction:column;
     width: 30vw;
     height: 100vh;
-    background: grey;
+    background: lightgray;
 }
 
 
@@ -74,7 +74,6 @@ html, body
     display:flex;
     height: 100vh;
     flex-direction:column;
-    background: green;
 }
 
 .chat_message
@@ -101,6 +100,7 @@ html, body
 {
     padding: 15%;
     text-align: center;
+    display: block;
 }
 
 .profile_image
@@ -141,6 +141,7 @@ html, body
 .contact_div
 {
     padding: 1vw;
+    border-top: 1px solid gray;
 }
 
 .contact_name_last_span
@@ -164,4 +165,103 @@ html, body
 {
     margin: 0;
     padding: 0;
+}
+
+.message_header
+{
+    height: 7vh;
+    max-height: 7vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background-color: lightgray;
+}
+
+.message_header_image
+{
+    height: 6vh;
+    width: 6vh;
+    display: inline-block;
+    border-radius: 50%;
+}
+
+.message_footer
+{
+    height: 6vh;
+    max-height: 6vh;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background-color: lightgray;
+}
+
+.messages_footer_attachments
+{
+    height: 4vh;
+    width: 4vh;
+    margin-top: 1vh;
+    margin-left: 1vw;
+    margin-right: 1vw;
+}
+
+.messages_message
+{
+    height: 83vh;
+    max-height: 83vh;
+    background-color: white;
+    overflow: scroll;
+}
+
+.message_footer_btn
+{
+    border: none;
+    background-color: white;
+    font-size: 1.5em;
+    width: 6vw;
+    border-radius: 10%;
+    padding: 1%;
+}
+
+.settings_icon
+{
+    width: 4vh;
+    height: 4vh;
+}
+
+.message_header_name
+{
+    display: inline-block;
+    font-size: 2em;
+    margin-left: 1em;
+}
+
+.receiver_span
+{
+    background: #5ca1f5;
+    margin-left: 20vw;
+}
+
+.sender_span
+{
+    background: #bebebe;
+    margin-right: 20vw;
+}
+
+.receiver_span, .sender_span
+{
+    border-radius: 5%;
+    white-space: unset;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-left: 1%;
+    padding-right: 2%;
+    display: inline-block;
+    margin: 1%;
+}
+
+.receiver_div
+{
+    text-align: right;
 }

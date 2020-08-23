@@ -48,13 +48,14 @@
 
         <div id="main" class="main">
             <div class="chat_list">
-                <div class="chat_message">
-                    Chats
-                </div>
+                <span class="chat_message">
+                    Chats &emsp; &emsp;
+                    <img src="res/settings.png" class="settings_icon" onclick="settingsClicked()"/>
+                </span>
                 <div id="contacts" class="contacts"></div>
             </div>
             <div class="div_right">
-                <div class="settings">
+                <div id="settings" class="settings">
                     <img src="res/placeholder.png" id="profile_image" class="profile_image"/>
                     <br/>
                     <br/>
@@ -80,7 +81,11 @@
                     <button class="btn" onclick="signOut()">Sign Out</button> 
                     <input id="file-input" type="file" name="name" style="display: none;" accept="image/jpeg" />
                 </div>
-                <div class="messages"></div>
+                <div id="messages" class="messages">
+                    <div class="message_header"><img id="message_header_image" src="res/placeholder.png" class="message_header_image"/> <p id="message_header_name" class="message_header_name"></p></div>
+                    <div id="messages_message" class="messages_message"></div>
+                    <div class="message_footer"><input id="message_text" type="text" class="field" placeholder="Message"/><img src="res/attachments.png" class="messages_footer_attachments"/><button class="message_footer_btn" onclick="sendMessage()">Send</button></div>
+                </div>
             </div>
         </div>
         <!-- <div class="overlay-container">
