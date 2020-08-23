@@ -116,6 +116,7 @@ function printContactedPersons()
             text = message.type;
         }
         var new_div = "<div id='"+message.user.uid+"_contact_div' class='contact_div' onclick='getChats(\""+index+"\")'><span class='contact_image_span'><img src='"+image+"' class='contact_img' /></span><span class='contact_name_last_span'><p class='contact_name_div'>"+message.user.first_name+" "+message.user.last_name+"</p><p id='"+message.user.uid+"_last_message'>"+text+"</p></span></div>";
+        httpGetAsync(text,message.user.uid+"_last_message");
         contacts_div.innerHTML += new_div;
         index += 1;
     });    
@@ -454,6 +455,25 @@ function httpGetAsync(message, callback)
     }
     xmlHttp.open("GET", url, true); // true for asynchronous 
     xmlHttp.send(null);
+}
+
+function httpGetAsync(text, id)
+{
+    var lang_code = getLangCode(currentUser.lang);
+    var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+lang_code+"&q="+text;
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() { 
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+            callbackForLastMessage(xmlHttp.responseText, id);
+    }
+    xmlHttp.open("GET", url, true); // true for asynchronous 
+    xmlHttp.send(null);
+}
+
+function callbackForLastMessage(text, id)
+{
+    var json = JSON.parse(text);
+    document.getElementById(id).innerHTML = json.data.translations[0].translatedText;
 }
 
 function callbackForMessages(text, message)
