@@ -312,12 +312,13 @@ function newImage()
     //     console.log("hello");
     //     console.log(document.getElementById('file-input').value);
     // });
-    input.addEventListener('change', function() {
+    var listener = input.addEventListener('change', function() {
         // console.log("hello");
         if(input.files.length > 0)
         {
             selected_file = input.files[0];
         }
+        input.removeEventListener('change',listener);
         //   label.textContent = input.files[0].name;
         // else
         //   label.textContent = 'Select a file';
@@ -435,15 +436,6 @@ function getLangCode(code)
     }
 }
 
-// function httpGet(message)
-// {
-//     var url = "https://translation.googleapis.com/language/translate/v2?key=AIzaSyCQjWT5txdMwpJXnCJ3H-pzMXuu0f46wzA&target="+getLangCode(currentUser.lang)+"&q="+message.text;
-//     var xmlHttp = new XMLHttpRequest();
-//     xmlHttp.open( "GET", true, false ); // false for synchronous request
-//     xmlHttp.send( null );
-//     return xmlHttp.responseText;
-// }
-
 function httpGetAsync(message, callback)
 {
     var lang_code = getLangCode(currentUser.lang);
@@ -473,7 +465,14 @@ function httpGetAsync(text, id)
 function callbackForLastMessage(text, id)
 {
     var json = JSON.parse(text);
-    document.getElementById(id).innerHTML = json.data.translations[0].translatedText;
+    try
+    {
+        document.getElementById(id).innerHTML = json.data.translations[0].translatedText;
+    }
+    catch(err)
+    {
+
+    }
 }
 
 function callbackForMessages(text, message)
@@ -483,4 +482,203 @@ function callbackForMessages(text, message)
     // console.log(json.data.translations[0].translatedText);
     var span = document.getElementById(message.id+"_span")
     span.innerHTML = json.data.translations[0].translatedText;
+}
+
+function attachmentsClicked()
+{
+    document.getElementById("myModal").style.display = "block";
+}
+
+function hideModal() {
+    document.getElementById("myModal").style.display = "none";
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == document.getElementById("myModal")) {
+        document.getElementById("myModal").style.display = "none";
+    }
+}
+
+function getImage()
+{
+    document.getElementById("myModal").style.display = "none";
+    var input = document.getElementById('file-input');
+    var listener = input.addEventListener('change', function() {
+        if(input.files.length > 0)
+        {
+            var image = input.files[0];
+            sendImageMessage(image);
+        }
+        input.removeEventListener('change',listener);
+    });
+    input.click(); 
+}
+
+function sendImageMessage(image)
+{
+    var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
+    var key = receiver_ref.key;
+    var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);
+    var storage_ref = firebase.storage().ref().child("Images").child(key+".jpg");
+    var upload_task = storage_ref.put(image);
+    upload_task.on('state_changed', function(snapshot)
+    {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) 
+        {
+            case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+            case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+        }
+    }, function(error) 
+    {
+        // Handle unsuccessful uploads
+    }, function() 
+    {
+            upload_task.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+            // var data = {
+            //     "image": downloadURL
+            // };
+            var data = {
+                "from": currentUser.uid,
+                "id": key,
+                "lang": getLangCode(currentUser.lang),
+                "link":downloadURL,
+                "text":"",
+                "to":to_user.uid,
+                "type":"image"
+            }
+            receiver_ref.set(data);
+            sender_ref.set(data);
+            // firebase.database().ref('/Users/' + currentUser.uid).update(data);
+        });
+    });
+}
+
+function getPdf()
+{
+    document.getElementById("myModal").style.display = "none";
+    var input = document.getElementById('file_Pdf');
+    var listener = input.addEventListener('change', function() {
+        if(input.files.length > 0)
+        {
+            var image = input.files[0];
+            sendPdfMessage(image);
+        }
+        input.removeEventListener('change',listener);
+    });
+    input.click(); 
+}
+
+function sendPdfMessage(image)
+{
+    var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
+    var key = receiver_ref.key;
+    var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);
+    var storage_ref = firebase.storage().ref().child("Documents").child(key+".pdf");
+    var upload_task = storage_ref.put(image);
+    upload_task.on('state_changed', function(snapshot)
+    {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) 
+        {
+            case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+            case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+        }
+    }, function(error) 
+    {
+        // Handle unsuccessful uploads
+    }, function() 
+    {
+            upload_task.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+            // var data = {
+            //     "image": downloadURL
+            // };
+            var data = {
+                "from": currentUser.uid,
+                "id": key,
+                "lang": getLangCode(currentUser.lang),
+                "link":downloadURL,
+                "text":"",
+                "to":to_user.uid,
+                "type":"pdf"
+            }
+            receiver_ref.set(data);
+            sender_ref.set(data);
+            // firebase.database().ref('/Users/' + currentUser.uid).update(data);
+        });
+    });
+}
+
+function getMSWord()
+{
+    document.getElementById("myModal").style.display = "none";
+    var input = document.getElementById('file_msword');
+    var listener = input.addEventListener('change', function() {
+        if(input.files.length > 0)
+        {
+            var image = input.files[0];
+            sendDocxMessage(image);
+        }
+        input.removeEventListener('change',listener);
+    });
+    input.click(); 
+}
+
+function sendDocxMessage(image)
+{
+    var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
+    var key = receiver_ref.key;
+    var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);
+    var storage_ref = firebase.storage().ref().child("Documents").child(key+".docx");
+    var upload_task = storage_ref.put(image);
+    upload_task.on('state_changed', function(snapshot)
+    {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) 
+        {
+            case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+            case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+        }
+    }, function(error) 
+    {
+        // Handle unsuccessful uploads
+    }, function() 
+    {
+            upload_task.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+            // var data = {
+            //     "image": downloadURL
+            // };
+            var data = {
+                "from": currentUser.uid,
+                "id": key,
+                "lang": getLangCode(currentUser.lang),
+                "link":downloadURL,
+                "text":"",
+                "to":to_user.uid,
+                "type":"docx"
+            }
+            receiver_ref.set(data);
+            sender_ref.set(data);
+            // firebase.database().ref('/Users/' + currentUser.uid).update(data);
+        });
+    });
 }
