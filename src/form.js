@@ -20,6 +20,8 @@ var to_user;
 var map;
 var ltitle;
 var marker;
+var message_index = 0;
+var selected_message_index = 0;
 
 class User 
 {
@@ -151,14 +153,16 @@ function getChats(index)
     {
         console.log(err);
     }
+    messages = []
     last_ref = firebase.database().ref('/Messages/'+currentUser.uid+'/'+user.uid);
     last_ref.on('child_added', function(data)
     {
         var message = new Message(data, false);
         addMessage(message);
-        // // messages.push(messages);
+        messages.push(message);
         // console.log(message);
     });
+    message_index = 0;
 }
 
 function addMessage(message)
@@ -167,7 +171,7 @@ function addMessage(message)
     var div;
     if(currentUser.uid == message.from)
     {
-        div = "<div id='"+message.id+"_div' class='receiver_div'><span id='"+message.id+"_span' class='receiver_span'>";
+        div = "<div id='"+message.id+"_div' class='receiver_div'><span id='"+message.id+"_span' class='receiver_span' onclick='messageClicked("+message_index+")'>";
         if(message.type == "text")
         {
             div+=message.text;
@@ -188,7 +192,7 @@ function addMessage(message)
     }
     else
     {
-        div = "<div id='"+message.id+"_div' class='sender_div'><span id='"+message.id+"_span' class='sender_span'>";
+        div = "<div id='"+message.id+"_div' class='sender_div'><span id='"+message.id+"_span' class='sender_span' onclick='messageClicked("+message_index+")'>";
         if(message.type == "text")
         {
             div+=message.text;
@@ -214,6 +218,44 @@ function addMessage(message)
     }
     view.innerHTML += div;
     view.scrollTop = view.scrollHeight;
+    message_index += 1;
+}
+
+function messageClicked(index)
+{
+    // console.log(messages[index]);
+    document.getElementById("optionModal").style.display = "block";
+    selected_message_index = index;
+}
+
+function deleteForMe()
+{
+    var m = messages[selected_message_index];
+    var ref = firebase.database().ref().child("Messages").child(m.from).child(m.to).child(m.id);
+    ref.remove();
+    messages.splice(selected_message_index,1);
+    message_index = 0;
+    document.getElementById("messages_message").innerHTML = "";
+    messages.forEach(function(m1)
+    {
+        addMessage(m1);
+    });
+    hideModal();
+}
+
+function deleteForEveryone()
+{
+    var m = messages[selected_message_index];
+    firebase.database().ref().child("Messages").child(m.to).child(m.from).child(m.id).remove();
+    deleteForMe();
+}
+
+function view()
+{
+    var m = messages[selected_message_index];
+    var win = window.open(m.link, '_blank');
+    win.focus();
+    hideModal();
 }
 
 function signUp(){
@@ -480,6 +522,7 @@ function attachmentsClicked()
 function hideModal() {
     document.getElementById("myModal").style.display = "none";
     document.getElementById("mapModal").style.display = "none";
+    document.getElementById("optionModal").style.display = "none";
   }
   
   // When the user clicks anywhere outside of the modal, close it
