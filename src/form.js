@@ -226,6 +226,39 @@ function messageClicked(index)
     // console.log(messages[index]);
     document.getElementById("optionModal").style.display = "block";
     selected_message_index = index;
+    var m = messages[selected_message_index];
+    if(m.from == currentUser.uid)
+    {
+        document.getElementById("delete_for_everyone_btn").style.display = "block";
+    }
+    else
+    {
+        document.getElementById("delete_for_everyone_btn").style.display = "none";
+    }
+    if(m.type == "image")
+    {
+        document.getElementById("view_image_btn").style.display = "block";
+    }
+    else
+    {
+        document.getElementById("view_image_btn").style.display = "none";
+    }
+    if(m.type == "pdf" || m.type == "docx")
+    {
+        document.getElementById("view_document_btn").style.display = "block";
+    }
+    else
+    {
+        document.getElementById("view_document_btn").style.display = "none";
+    }
+    if(m.type == "location")
+    {
+        document.getElementById("view_location_btn").style.display = "block";
+    }
+    else
+    {
+        document.getElementById("view_location_btn").style.display = "none";
+    }
 }
 
 function deleteForMe()
@@ -339,20 +372,12 @@ function signOut(){
 function newImage()
 {
     var input = document.getElementById('file-input');
-    // $('file-input').change(function () {
-    //     console.log("hello");
-    //     console.log(document.getElementById('file-input').value);
-    // });
     var listener = input.addEventListener('change', function() {
-        // console.log("hello");
         if(input.files.length > 0)
         {
             selected_file = input.files[0];
         }
         input.removeEventListener('change',listener);
-        //   label.textContent = input.files[0].name;
-        // else
-        //   label.textContent = 'Select a file';
     });
     input.click(); 
 }
@@ -728,6 +753,7 @@ function initMap() {
 function getLocation()
 {
     document.getElementById("mapModal").style.display = "block";
+    document.getElementById("map_send_btn").style.display = "inline-block";
 }
 
 function placeMarker(location) {
@@ -798,4 +824,21 @@ function sendLocation()
         marker = null;
         ltitle = null;
     }
+}
+
+function viewLocation()
+{
+    var m = messages[selected_message_index];
+    console.log(m);
+    document.getElementById("mapModal").style.display = "block";
+    document.getElementById("map_send_btn").style.display = "none";
+    document.getElementById("optionModal").style.display = "none";
+    var location = new google.maps.LatLng(m.lat, m.lng)
+    marker = new google.maps.Marker({
+        position: location, 
+        map: map
+    });
+    const infowindow = new google.maps.InfoWindow();
+    infowindow.setContent(m.location_title);
+    infowindow.open(map,marker);
 }
