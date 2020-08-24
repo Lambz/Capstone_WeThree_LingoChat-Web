@@ -8,7 +8,7 @@ var firebaseConfig = {
     appId: "1:641112902679:web:d3d88eaba050f9de932052",
     measurementId: "G-EZ5FCCXTVL"
 };
-// Initialize Firebase
+
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 var database = firebase.database();
@@ -18,6 +18,7 @@ var last_ref;
 var messages = []
 var to_user;
 var map;
+var ltitle;
 var marker;
 
 class User 
@@ -673,50 +674,13 @@ function sendDocxMessage(image)
 }
 
 function initMap() {
-    // // The location of Uluru
     var toronto = {lat: 43.6426, lng: -79.3871};
-    // The map, centered at Uluru
     map = new google.maps.Map(document.getElementById('map'), {zoom: 12, center: toronto});
 
     google.maps.event.addListener(map, 'click', function(event) {
         placeMarker(event.latLng);
      });
-    // The marker, positioned at Uluru
-    // var marker = new google.maps.Marker({position: uluru, map: map});
-    // map = new google.maps.Map(document.getElementById('map'), {
-    //     center: {lat: -34.397, lng: 150.644},
-    //     zoom: 6
-    //     });
-    //     infoWindow = new google.maps.InfoWindow;
-
-        // Try HTML5 geolocation.
-    //     if (navigator.geolocation) {
-    //         navigator.geolocation.getCurrentPosition(function(position) {
-    //             var pos = {
-    //             lat: position.coords.latitude,
-    //             lng: position.coords.longitude
-    //             };
-
-    //         infoWindow.setPosition(pos);
-    //         infoWindow.setContent('Location found.');
-    //         infoWindow.open(map);
-    //         map.setCenter(pos);
-    //     }, function() {
-    //         handleLocationError(true, infoWindow, map.getCenter());
-    //     });
-    //     } else {
-    //     // Browser doesn't support Geolocation
-    //     handleLocationError(false, infoWindow, map.getCenter());
-    // }
 }
-
-// function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-//     infoWindow.setPosition(pos);
-//     infoWindow.setContent(browserHasGeolocation ?
-//                           'Error: The Geolocation service failed.' :
-//                           'Error: Your browser doesn\'t support geolocation.');
-//     infoWindow.open(map);
-// }
 
 function getLocation()
 {
@@ -724,11 +688,13 @@ function getLocation()
 }
 
 function placeMarker(location) {
-    console.log(location);
+    // console.log("mLocation");
+    // console.log(mLocation[0]);
     marker = new google.maps.Marker({
         position: location, 
         map: map
     });
+    // console.log(marker.getPosition().lat());
     geocodeLatLng(location)
 }
 
@@ -746,6 +712,7 @@ function geocodeLatLng(location) {
                 // });
                 const infowindow = new google.maps.InfoWindow();
                 infowindow.setContent(results[0].formatted_address);
+                ltitle = results[0].formatted_address;
                 infowindow.open(map, marker);
             } else {
                 window.alert("No results found");
@@ -755,4 +722,37 @@ function geocodeLatLng(location) {
             }
         }
     );
+}
+
+function sendLocation()
+{
+    document.getElementById("myModal").style.display = "none";
+    document.getElementById("mapModal").style.display = "none";
+    var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
+    var key = receiver_ref.key;
+    var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);
+    if(marker != null)
+    {
+        if (ltitle == null || ltitle == "")
+        {
+            ltitle = "Unknown";
+        }
+        var data = {
+            "from": currentUser.uid,
+            "id": key,
+            "lang": getLangCode(currentUser.lang),
+            "link":"",
+            "text":"",
+            "to":to_user.uid,
+            "type":"location",
+            "lat":marker.getPosition().lat(),
+            "lng":marker.getPosition().lng(),
+            "locationtitle": ltitle
+        }
+        console.log(data);
+        receiver_ref.set(data);
+        sender_ref.set(data);
+        marker = null;
+        ltitle = null;
+    }
 }
