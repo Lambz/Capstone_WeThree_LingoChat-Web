@@ -17,6 +17,8 @@ var contact_messages = [];
 var last_ref;
 var messages = []
 var to_user;
+var map;
+var marker;
 
 class User 
 {
@@ -476,12 +478,14 @@ function attachmentsClicked()
 
 function hideModal() {
     document.getElementById("myModal").style.display = "none";
+    document.getElementById("mapModal").style.display = "none";
   }
   
   // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
     if (event.target == document.getElementById("myModal")) {
         document.getElementById("myModal").style.display = "none";
+        document.getElementById("mapModal").style.display = "none";
     }
 }
 
@@ -666,4 +670,89 @@ function sendDocxMessage(image)
             // firebase.database().ref('/Users/' + currentUser.uid).update(data);
         });
     });
+}
+
+function initMap() {
+    // // The location of Uluru
+    var toronto = {lat: 43.6426, lng: -79.3871};
+    // The map, centered at Uluru
+    map = new google.maps.Map(document.getElementById('map'), {zoom: 12, center: toronto});
+
+    google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(event.latLng);
+     });
+    // The marker, positioned at Uluru
+    // var marker = new google.maps.Marker({position: uluru, map: map});
+    // map = new google.maps.Map(document.getElementById('map'), {
+    //     center: {lat: -34.397, lng: 150.644},
+    //     zoom: 6
+    //     });
+    //     infoWindow = new google.maps.InfoWindow;
+
+        // Try HTML5 geolocation.
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(function(position) {
+    //             var pos = {
+    //             lat: position.coords.latitude,
+    //             lng: position.coords.longitude
+    //             };
+
+    //         infoWindow.setPosition(pos);
+    //         infoWindow.setContent('Location found.');
+    //         infoWindow.open(map);
+    //         map.setCenter(pos);
+    //     }, function() {
+    //         handleLocationError(true, infoWindow, map.getCenter());
+    //     });
+    //     } else {
+    //     // Browser doesn't support Geolocation
+    //     handleLocationError(false, infoWindow, map.getCenter());
+    // }
+}
+
+// function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+//     infoWindow.setPosition(pos);
+//     infoWindow.setContent(browserHasGeolocation ?
+//                           'Error: The Geolocation service failed.' :
+//                           'Error: Your browser doesn\'t support geolocation.');
+//     infoWindow.open(map);
+// }
+
+function getLocation()
+{
+    document.getElementById("mapModal").style.display = "block";
+}
+
+function placeMarker(location) {
+    console.log(location);
+    marker = new google.maps.Marker({
+        position: location, 
+        map: map
+    });
+    geocodeLatLng(location)
+}
+
+function geocodeLatLng(location) {
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode(
+        { location: location },(results, status) => 
+        {
+            if (status === "OK") {
+            if (results[0]) {
+                // map.setZoom(11);
+                // const marker = new google.maps.Marker({
+                // position: latlng,
+                // map: map
+                // });
+                const infowindow = new google.maps.InfoWindow();
+                infowindow.setContent(results[0].formatted_address);
+                infowindow.open(map, marker);
+            } else {
+                window.alert("No results found");
+            }
+            } else {
+            window.alert("Geocoder failed due to: " + status);
+            }
+        }
+    );
 }
