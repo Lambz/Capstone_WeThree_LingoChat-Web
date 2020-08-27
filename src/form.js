@@ -184,6 +184,10 @@ function addMessage(message)
         {
             div+="<img src='res/file.png' class='message_image'/>"
         }
+        else if(message.type == "video")
+        {
+            div+="<img src='res/video.png' style='padding:1%' class='message_image'/>"
+        }
         else
         {
             div+="<img src='res/location.png' class='message_image'/>"
@@ -258,6 +262,14 @@ function messageClicked(index)
     else
     {
         document.getElementById("view_location_btn").style.display = "none";
+    }
+    if(m.type == "video")
+    {
+        document.getElementById("view_video_btn").style.display = "block";
+    }
+    else
+    {
+        document.getElementById("view_video_btn").style.display = "none";
     }
 }
 
@@ -841,4 +853,65 @@ function viewLocation()
     const infowindow = new google.maps.InfoWindow();
     infowindow.setContent(m.location_title);
     infowindow.open(map,marker);
+}
+
+function getVideo()
+{
+    document.getElementById("myModal").style.display = "none";
+    var input = document.getElementById('file_video');
+    var listener = input.addEventListener('change', function() {
+        if(input.files.length > 0)
+        {
+            var image = input.files[0];
+            sendVideo(image);
+        }
+        input.removeEventListener('change',listener);
+    });
+    input.click(); 
+}
+
+function sendVideo(image)
+{
+    var receiver_ref = firebase.database().ref().child("Messages").child(currentUser.uid).child(to_user.uid).push();
+    var key = receiver_ref.key;
+    var sender_ref = firebase.database().ref().child("Messages").child(to_user.uid).child(currentUser.uid).child(key);
+    var storage_ref = firebase.storage().ref().child("Videos").child(key+".mp4");
+    var upload_task = storage_ref.put(image);
+    upload_task.on('state_changed', function(snapshot)
+    {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) 
+        {
+            case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+            case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+        }
+    }, function(error) 
+    {
+        // Handle unsuccessful uploads
+    }, function() 
+    {
+            upload_task.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            console.log('File available at', downloadURL);
+            // var data = {
+            //     "image": downloadURL
+            // };
+            var data = {
+                "from": currentUser.uid,
+                "id": key,
+                "lang": getLangCode(currentUser.lang),
+                "link":downloadURL,
+                "text":"",
+                "to":to_user.uid,
+                "type":"video"
+            }
+            receiver_ref.set(data);
+            sender_ref.set(data);
+            // firebase.database().ref('/Users/' + currentUser.uid).update(data);
+        });
+    });
 }
