@@ -478,7 +478,7 @@ function sendMessage()
         var data = {
             "from": currentUser.uid,
             "id": key,
-            "lang": getLangCode(currentUser.lang),
+            "lang": currentUser.lang,
             "link":"",
             "text":text,
             "to":to_user.uid,
@@ -625,7 +625,7 @@ function sendImageMessage(image)
             var data = {
                 "from": currentUser.uid,
                 "id": key,
-                "lang": getLangCode(currentUser.lang),
+                "lang": currentUser.lang,
                 "link":downloadURL,
                 "text":"",
                 "to":to_user.uid,
@@ -686,7 +686,7 @@ function sendPdfMessage(image)
             var data = {
                 "from": currentUser.uid,
                 "id": key,
-                "lang": getLangCode(currentUser.lang),
+                "lang": currentUser.lang,
                 "link":downloadURL,
                 "text":"",
                 "to":to_user.uid,
@@ -747,7 +747,7 @@ function sendDocxMessage(image)
             var data = {
                 "from": currentUser.uid,
                 "id": key,
-                "lang": getLangCode(currentUser.lang),
+                "lang": currentUser.lang,
                 "link":downloadURL,
                 "text":"",
                 "to":to_user.uid,
@@ -828,7 +828,7 @@ function sendLocation()
         var data = {
             "from": currentUser.uid,
             "id": key,
-            "lang": getLangCode(currentUser.lang),
+            "lang": currentUser.lang,
             "link":"",
             "text":"",
             "to":to_user.uid,
@@ -910,7 +910,7 @@ function sendVideo(image)
             var data = {
                 "from": currentUser.uid,
                 "id": key,
-                "lang": getLangCode(currentUser.lang),
+                "lang": currentUser.lang,
                 "link":downloadURL,
                 "text":"",
                 "to":to_user.uid,
