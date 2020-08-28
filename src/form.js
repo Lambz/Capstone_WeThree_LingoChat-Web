@@ -449,6 +449,13 @@ function save()
                 });
             });
         }
+        else
+        {
+            firebase.database().ref('/Users/' + currentUser.uid).update(data);
+            currentUser.first_name = data["first_name"];
+            currentUser.last_name = data["last_name"];
+            currentUser.lang = data["lang"];
+        }
     } 
     
 }
